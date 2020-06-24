@@ -35,10 +35,10 @@ public class ExpressionValidator {
         if (operations.contains(expression.substring(expression.length() - 1))) {
             return false;
         }
-        expression = expression.replaceAll("\\(", "").replaceAll("\\)", "");
-        for (int i = 1; i < expression.length() - 1; i++) {
-            if (operations.indexOf(expression.charAt(i)) >= 0
-                    && operations.indexOf(expression.charAt(i + 1)) >= 0) {
+        String expressionWithoutBrackets = expression.replaceAll("\\(", "").replaceAll("\\)", "");
+        for (int i = 1; i < expressionWithoutBrackets.length() - 1; i++) {
+            if (operations.indexOf(expressionWithoutBrackets.charAt(i)) >= 0
+                    && operations.indexOf(expressionWithoutBrackets.charAt(i + 1)) >= 0) {
                 return false;
             }
         }

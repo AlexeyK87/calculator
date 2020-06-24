@@ -6,12 +6,12 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ParserTest {
 
     @Test
-    public void simpleExpression() throws ExpressionException{
+    public void simpleExpression() throws ExpressionException {
         String expression = "8+5";
         Queue<String> parsedExpression = new LinkedList<>();
         parsedExpression.offer("8");
@@ -41,7 +41,7 @@ public class ParserTest {
     }
 
     @Test
-    public void expressionWithDouble() throws ExpressionException{
+    public void expressionWithDouble() throws ExpressionException {
         String expression = "8.45+5.27";
         Queue<String> parsedExpression = new LinkedList<>();
         parsedExpression.offer("8.45");

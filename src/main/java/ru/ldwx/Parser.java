@@ -32,7 +32,7 @@ public class Parser {
                             operatorsStack.offerFirst(currentOperator);
                             break;
                         case ")":
-                            if (firstOperatorInStack.equals("(")) {
+                            if ("(".equals(firstOperatorInStack)) {
                                 operatorsStack.poll();
                             } else {
                                 while (!"(".equals(firstOperatorInStack)) {
@@ -69,9 +69,9 @@ public class Parser {
                             break;
                         case "*":
                         case "/":
-                            if (firstOperatorInStack.equals("+")
-                                    || firstOperatorInStack.equals("-")
-                                    || firstOperatorInStack.equals("(")) {
+                            if ("+".equals(firstOperatorInStack)
+                                    || "-".equals(firstOperatorInStack)
+                                    || "(".equals(firstOperatorInStack)) {
                                 operatorsStack.offerFirst(currentOperator);
                             } else {
                                 while (true) {
@@ -80,7 +80,7 @@ public class Parser {
                                         operatorsStack.offerFirst(currentOperator);
                                         break;
                                     }
-                                    if (firstOperatorInStack.equals("*") || firstOperatorInStack.equals("/")) {
+                                    if ("*".equals(firstOperatorInStack) || "/".equals(firstOperatorInStack)) {
                                         parsedExpression.offer(firstOperatorInStack);
                                     } else {
                                         operatorsStack.offerFirst(currentOperator);

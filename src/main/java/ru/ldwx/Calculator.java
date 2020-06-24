@@ -38,8 +38,9 @@ public class Calculator {
                     throw new ExpressionException("Деление на ноль");
                 }
                 return secondNumber / firstNumber;
+            default:
+                throw new ExpressionException("Неизвестная операция");
         }
-        return 0d;
     }
 
     private boolean isNumeric(String strNum) {
