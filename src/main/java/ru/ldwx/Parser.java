@@ -4,7 +4,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 public class Parser {
-    private final String operations = "+-*/()";
     private final ExpressionValidator validator = new ExpressionValidator();
 
     public Deque<String> parseExpression(String expression) throws ExpressionException {
@@ -17,7 +16,7 @@ public class Parser {
         if (!validator.validateOperations(expression)) {
             throw new ExpressionException("В выражении не корректно проставлены операции");
         }
-
+        String operations = "+-*/()";
         Deque<String> parsedExpression = new LinkedList<>();
         Deque<String> operatorsStack = new LinkedList<>();
         for (int i = 0; i < expression.length(); i++) {
