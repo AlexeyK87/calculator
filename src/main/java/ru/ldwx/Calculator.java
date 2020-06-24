@@ -8,11 +8,11 @@ public class Calculator {
     private final Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
     private final Parser parser = new Parser();
 
-    public Double calculate(String input) {
+    public Double calculate(String input) throws ExpressionException {
         Deque<String> operators = parser.parseExpression(input);
         Deque<Double> calculationResults = new LinkedList<>();
         while (!operators.isEmpty()) {
-            String currentOperator = operators.pollFirst();
+            String currentOperator = operators.poll();
             if (isNumeric(currentOperator)) {
                 calculationResults.offer(Double.parseDouble(currentOperator));
             } else {
@@ -25,7 +25,7 @@ public class Calculator {
         return calculationResults.poll();
     }
 
-    private Double calc(Double firstNumber, Double secondNumber, String currentOperator) {
+    private Double calc(Double firstNumber, Double secondNumber, String currentOperator) throws ExpressionException {
         switch (currentOperator) {
             case "+":
                 return secondNumber + firstNumber;
@@ -34,6 +34,9 @@ public class Calculator {
             case "*":
                 return secondNumber * firstNumber;
             case "/":
+                if (firstNumber.equals((double) 0)) {
+                    throw new ExpressionException("Деление на ноль");
+                }
                 return secondNumber / firstNumber;
         }
         return 0d;

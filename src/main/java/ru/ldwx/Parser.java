@@ -2,39 +2,46 @@ package ru.ldwx;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class Parser {
     private final String operations = "+-*/()";
+    private final ExpressionValidator validator = new ExpressionValidator();
 
-    public Queue<String> parseExpression(String expression) {
+    public Deque<String> parseExpression(String expression) throws ExpressionException {
+        if (!validator.validateSize(expression)) {
+            throw new ExpressionException("Выражение не должно быть пустым");
+        }
+        if (!validator.validateBrackets(expression)) {
+            throw new ExpressionException("Скобки в выражении расставлены не корректно");
+        }
+        if (!validator.validateOperations(expression)) {
+            throw new ExpressionException("В выражении не корректно проставлены операции");
+        }
+
         Deque<String> parsedExpression = new LinkedList<>();
         Deque<String> operatorsStack = new LinkedList<>();
         for (int i = 0; i < expression.length(); i++) {
             String currentOperator = String.valueOf(expression.charAt(i));
             if (operations.contains(currentOperator)) {
                 if (operatorsStack.isEmpty()) {
-                    if (currentOperator.equals(")")) {
-                        throw new IllegalArgumentException();
-                    }
-                    operatorsStack.offerFirst(currentOperator);
+                    operatorsStack.offer(currentOperator);
                 } else {
-                    String firstOperatorInStack = operatorsStack.peekFirst();
+                    String firstOperatorInStack = operatorsStack.peek();
                     switch (currentOperator) {
                         case "(":
                             operatorsStack.offerFirst(currentOperator);
                             break;
                         case ")":
                             if (firstOperatorInStack.equals("(")) {
-                                operatorsStack.pollFirst();
+                                operatorsStack.poll();
                             } else {
                                 while (!"(".equals(firstOperatorInStack)) {
-                                    firstOperatorInStack = operatorsStack.pollFirst();
+                                    firstOperatorInStack = operatorsStack.poll();
                                     if (firstOperatorInStack == null) {
                                         throw new IllegalArgumentException();
                                     }
                                     if (!"(".equals(firstOperatorInStack)) {
-                                        parsedExpression.offerLast(firstOperatorInStack);
+                                        parsedExpression.offer(firstOperatorInStack);
                                     }
                                 }
                             }
@@ -45,7 +52,7 @@ public class Parser {
                                 operatorsStack.offerFirst(currentOperator);
                             } else {
                                 while (!operatorsStack.isEmpty()) {
-                                    firstOperatorInStack = operatorsStack.pollFirst();
+                                    firstOperatorInStack = operatorsStack.poll();
 
                                     if (operatorsStack.isEmpty()) {
                                         operatorsStack.offerFirst(currentOperator);
@@ -55,7 +62,7 @@ public class Parser {
                                         operatorsStack.offerFirst(currentOperator);
                                         break;
                                     } else {
-                                        parsedExpression.offerLast(firstOperatorInStack);
+                                        parsedExpression.offer(firstOperatorInStack);
                                     }
                                 }
                             }
@@ -68,13 +75,13 @@ public class Parser {
                                 operatorsStack.offerFirst(currentOperator);
                             } else {
                                 while (true) {
-                                    firstOperatorInStack = operatorsStack.pollFirst();
+                                    firstOperatorInStack = operatorsStack.poll();
                                     if (firstOperatorInStack == null) {
                                         operatorsStack.offerFirst(currentOperator);
                                         break;
                                     }
                                     if (firstOperatorInStack.equals("*") || firstOperatorInStack.equals("/")) {
-                                        parsedExpression.offerLast(firstOperatorInStack);
+                                        parsedExpression.offer(firstOperatorInStack);
                                     } else {
                                         operatorsStack.offerFirst(currentOperator);
                                         break;
@@ -87,7 +94,25 @@ public class Parser {
                     }
                 }
             } else {
-                parsedExpression.offerLast(currentOperator);
+                StringBuilder builder = new StringBuilder();
+                while (!operations.contains(currentOperator)) {
+                    builder.append(currentOperator);
+                    if (i < expression.length() - 1) {
+                        String tmpOperator = String.valueOf(expression.charAt(i + 1));
+                        if (operations.contains(tmpOperator)) {
+                            break;
+                        }
+                        i++;
+                        currentOperator = String.valueOf(expression.charAt(i));
+                    } else {
+                        break;
+                    }
+                }
+
+                if (!validator.validateNumber(builder.toString())) {
+                    throw new ExpressionException("Не верный формат числа");
+                }
+                parsedExpression.offerLast(builder.toString());
             }
         }
         while (!operatorsStack.isEmpty()) {

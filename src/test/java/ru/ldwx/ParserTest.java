@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class ParserTest {
 
     @Test
-    public void simpleExpressionTest() {
+    public void simpleExpression() throws ExpressionException{
         String expression = "8+5";
         Queue<String> parsedExpression = new LinkedList<>();
         parsedExpression.offer("8");
@@ -21,7 +21,7 @@ public class ParserTest {
     }
 
     @Test
-    public void hardExpression() {
+    public void complexExpression() throws ExpressionException {
         String expression = "(8+2*5)/(1+3*2-4)";
         Queue<String> parsedExpression = new LinkedList<>();
         parsedExpression.offer("8");
@@ -37,6 +37,16 @@ public class ParserTest {
         parsedExpression.offer("4");
         parsedExpression.offer("-");
         parsedExpression.offer("/");
+        assertEquals(parsedExpression, new Parser().parseExpression(expression));
+    }
+
+    @Test
+    public void expressionWithDouble() throws ExpressionException{
+        String expression = "8.45+5.27";
+        Queue<String> parsedExpression = new LinkedList<>();
+        parsedExpression.offer("8.45");
+        parsedExpression.offer("5.27");
+        parsedExpression.offer("+");
         assertEquals(parsedExpression, new Parser().parseExpression(expression));
     }
 }
