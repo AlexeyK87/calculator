@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class ParserTest {
 

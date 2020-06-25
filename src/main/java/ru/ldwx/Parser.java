@@ -16,102 +16,100 @@ public class Parser {
         if (!validator.validateOperations(expression)) {
             throw new ExpressionException("В выражении не корректно проставлены операции");
         }
-        String operations = "+-*/()";
         Deque<String> parsedExpression = new LinkedList<>();
         Deque<String> operatorsStack = new LinkedList<>();
         for (int i = 0; i < expression.length(); i++) {
-            String currentOperator = String.valueOf(expression.charAt(i));
-            if (operations.contains(currentOperator)) {
-                if (operatorsStack.isEmpty()) {
-                    operatorsStack.offer(currentOperator);
-                } else {
-                    String firstOperatorInStack = operatorsStack.peek();
-                    switch (currentOperator) {
-                        case "(":
-                            operatorsStack.offerFirst(currentOperator);
-                            break;
-                        case ")":
-                            if ("(".equals(firstOperatorInStack)) {
-                                operatorsStack.poll();
-                            } else {
-                                while (!"(".equals(firstOperatorInStack)) {
-                                    firstOperatorInStack = operatorsStack.poll();
-                                    if (firstOperatorInStack == null) {
-                                        throw new IllegalArgumentException();
-                                    }
-                                    if (!"(".equals(firstOperatorInStack)) {
-                                        parsedExpression.offer(firstOperatorInStack);
-                                    }
-                                }
-                            }
-                            break;
-                        case "+":
-                        case "-":
-                            if (firstOperatorInStack.equals("(")) {
-                                operatorsStack.offerFirst(currentOperator);
-                            } else {
-                                while (!operatorsStack.isEmpty()) {
-                                    firstOperatorInStack = operatorsStack.poll();
-
-                                    if (operatorsStack.isEmpty()) {
-                                        operatorsStack.offerFirst(currentOperator);
-                                        break;
-                                    } else if ("(".equals(firstOperatorInStack)) {
-                                        operatorsStack.offerFirst(firstOperatorInStack);
-                                        operatorsStack.offerFirst(currentOperator);
-                                        break;
-                                    } else {
-                                        parsedExpression.offer(firstOperatorInStack);
-                                    }
-                                }
-                            }
-                            break;
-                        case "*":
-                        case "/":
-                            if ("+".equals(firstOperatorInStack)
-                                    || "-".equals(firstOperatorInStack)
-                                    || "(".equals(firstOperatorInStack)) {
-                                operatorsStack.offerFirst(currentOperator);
-                            } else {
-                                while (true) {
-                                    firstOperatorInStack = operatorsStack.poll();
-                                    if (firstOperatorInStack == null) {
-                                        operatorsStack.offerFirst(currentOperator);
-                                        break;
-                                    }
-                                    if ("*".equals(firstOperatorInStack) || "/".equals(firstOperatorInStack)) {
-                                        parsedExpression.offer(firstOperatorInStack);
-                                    } else {
-                                        operatorsStack.offerFirst(currentOperator);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                }
-            } else {
-                StringBuilder builder = new StringBuilder();
-                while (!operations.contains(currentOperator)) {
-                    builder.append(currentOperator);
-                    if (i < expression.length() - 1) {
-                        String tmpOperator = String.valueOf(expression.charAt(i + 1));
-                        if (operations.contains(tmpOperator)) {
-                            break;
-                        }
-                        i++;
-                        currentOperator = String.valueOf(expression.charAt(i));
+            char currentChar = expression.charAt(i);
+            String firstOperatorInStack;
+            switch (currentChar) {
+                case '(':
+                    operatorsStack.offerFirst("(");
+                    break;
+                case ')':
+                    firstOperatorInStack = operatorsStack.poll();
+                    if ("(".equals(firstOperatorInStack)) {
+                        operatorsStack.poll();
                     } else {
+                        do {
+                            parsedExpression.offer(firstOperatorInStack);
+                            firstOperatorInStack = operatorsStack.poll();
+                        } while (!"(".equals(firstOperatorInStack));
+                    }
+                    break;
+                case '+':
+                case '-':
+                    if (operatorsStack.isEmpty()) {
+                        operatorsStack.offerFirst(String.valueOf(currentChar));
                         break;
                     }
-                }
+                    firstOperatorInStack = operatorsStack.peek();
+                    if ("(".equals(firstOperatorInStack)) {
+                        operatorsStack.offerFirst(String.valueOf(currentChar));
+                    } else {
+                        while (!operatorsStack.isEmpty()) {
+                            firstOperatorInStack = operatorsStack.poll();
+                            if (operatorsStack.isEmpty()) {
+                                operatorsStack.offerFirst(String.valueOf(currentChar));
+                                break;
+                            } else if ("(".equals(firstOperatorInStack)) {
+                                operatorsStack.offerFirst(firstOperatorInStack);
+                                operatorsStack.offerFirst(String.valueOf(currentChar));
+                                break;
+                            } else {
+                                parsedExpression.offer(firstOperatorInStack);
+                            }
+                        }
+                    }
+                    break;
+                case '*':
+                case '/':
+                    if (operatorsStack.isEmpty()) {
+                        operatorsStack.offerFirst(String.valueOf(currentChar));
+                        break;
+                    }
+                    firstOperatorInStack = operatorsStack.peekFirst();
+                    if ("+".equals(firstOperatorInStack)
+                            || "-".equals(firstOperatorInStack)
+                            || "(".equals(firstOperatorInStack)) {
+                        operatorsStack.offerFirst(String.valueOf(currentChar));
+                    } else {
+                        while (true) {
+                            firstOperatorInStack = operatorsStack.poll();
+                            if (firstOperatorInStack == null) {
+                                operatorsStack.offerFirst(String.valueOf(currentChar));
+                                break;
+                            }
+                            if ("*".equals(firstOperatorInStack) || "/".equals(firstOperatorInStack)) {
+                                parsedExpression.offer(firstOperatorInStack);
+                            } else {
+                                operatorsStack.offerFirst(String.valueOf(currentChar));
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    StringBuilder builder = new StringBuilder();
+                    String operations = "+-*/()";
+                    String currentOperator = String.valueOf(currentChar);
+                    while (!operations.contains(currentOperator)) {
+                        builder.append(currentOperator);
+                        if (i < expression.length() - 1) {
+                            String tmpOperator = String.valueOf(expression.charAt(i + 1));
+                            if (operations.contains(tmpOperator)) {
+                                break;
+                            }
+                            i++;
+                            currentOperator = String.valueOf(expression.charAt(i));
+                        } else {
+                            break;
+                        }
+                    }
 
-                if (!validator.validateNumber(builder.toString())) {
-                    throw new ExpressionException("Не верный формат числа");
-                }
-                parsedExpression.offerLast(builder.toString());
+                    if (!validator.validateNumber(builder.toString())) {
+                        throw new ExpressionException("Не верный формат числа");
+                    }
+                    parsedExpression.offerLast(builder.toString());
             }
         }
         while (!operatorsStack.isEmpty()) {
