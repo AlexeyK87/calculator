@@ -12,6 +12,8 @@ public class CalculatorTest {
         assertEquals(Double.valueOf(2), new Calculator().calculate("1+1"));
         assertEquals(Double.valueOf(1), new Calculator().calculate("1/1"));
         assertEquals(Double.valueOf(10), new Calculator().calculate("8.25+1.75"));
+        assertEquals(Double.valueOf(10), new Calculator().calculate("(8.25+1.75)"));
+        assertEquals(Double.valueOf(4), new Calculator().calculate("((1+1)+(1+1))"));
     }
 
     @Test(expected = ExpressionException.class)
