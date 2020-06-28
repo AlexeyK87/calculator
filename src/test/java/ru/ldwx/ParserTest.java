@@ -50,18 +50,23 @@ public class ParserTest {
         assertEquals(parsedExpression, new Parser().parseExpression(expression));
     }
 
-    @Test (expected = ExpressionException.class)
-    public void parserBracketException() throws ExpressionException{
+    @Test(expected = ExpressionException.class)
+    public void parserBracketException() throws ExpressionException {
         new Parser().parseExpression("2+8)");
     }
 
-    @Test (expected = ExpressionException.class)
-    public void parserSizeException() throws ExpressionException{
+    @Test(expected = ExpressionException.class)
+    public void parserSizeException() throws ExpressionException {
         new Parser().parseExpression("");
     }
 
-    @Test (expected = ExpressionException.class)
-    public void parserOperationException() throws ExpressionException{
+    @Test(expected = ExpressionException.class)
+    public void parserNullExpressionException() throws ExpressionException {
+        new Parser().parseExpression(null);
+    }
+
+    @Test(expected = ExpressionException.class)
+    public void parserOperationException() throws ExpressionException {
         new Parser().parseExpression("2/+8)");
     }
 }
